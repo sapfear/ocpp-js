@@ -26,7 +26,7 @@ class OCPP {
 
   createChargingPointServer(){
     // ChargingPointServer Default URI is /Ocpp/ChargePointService
-    var port = this.options.chargingPointServer.port || port || 9221;
+    var port = this.options.chargingPointServer.port || port || 9000;
     return new ChargingPointServer(port);
   }
 }
