@@ -9,19 +9,21 @@ class OCPP {
 
   createCentralSystem(port){
     // CentralSystem Default URI is /Ocpp/CentralSystemService
+    console.log('port: ' + this.options.centralSystem.port);
     var port = this.options.centralSystem.port || port || 9220;
     return new CentralSystem(port);
   }
 
-  createChargingPoint(uri, name){
+  createChargingPoint(uri, name, w){
+    var wsdl = this.options.chargingPoint.wsdl || w;
     var serverURI = this.options.chargingPoint.serverURI || uri;
     var pointName = this.options.chargingPoint.name || name || 'Simulator';
 
-    if(!serverURI){
+    if(!serverURI && !wsdl){
       throw 'Charging Point Server URI is required';
     }
 
-    return new ChargingPoint(serverURI, pointName);
+    return new ChargingPoint(serverURI, pointName, wsdl);
   }
 
   createChargingPointServer(){

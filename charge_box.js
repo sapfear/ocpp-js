@@ -1,4 +1,4 @@
-var OCPP =  require('../index.js');
+var OCPP =  require('./index.js');
 
 var options = {
   chargingPoint: {
@@ -7,7 +7,7 @@ var options = {
     name: 'PCS_Premium_00000001'
   },
   chargingPointServer: {
-    port: 9221
+    port: 9000
   }
 }
 

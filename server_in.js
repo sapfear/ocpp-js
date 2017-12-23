@@ -1,4 +1,4 @@
-var OCPP =  require('../index.js');
+var OCPP =  require('./index.js');
 
 var options = {
   centralSystem: {

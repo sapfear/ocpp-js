@@ -1,8 +1,8 @@
-var OCPP =  require('../index.js');
+var OCPP =  require('./index.js');
 
 var options = {
-  chargingPointServer: {
-    port: 9220
+  centralSystem: {
+    port: 8080
   }
 }
 
@@ -12,14 +12,14 @@ var ocppJS = new OCPP(options);
 var server = ocppJS.createCentralSystem();
 
 server.createChargeBoxClient({
- 	chargeBoxIdentity: 'Simulator 1',
- 	endpoint: 'http://127.0.0.1:9221/Ocpp/ChargePointService'
+ 	chargeBoxIdentity: 'PCS_Premium_00000001',
+ 	endpoint: 'http://127.0.0.1:9000/Ocpp/ChargePointService'
 });
 
 setTimeout(function(){
 	console.log('reset changeAvailability');
 	
-    server.reset('Simulator 1', 'http://127.0.0.1:9221/Ocpp/ChargePointService', { type: 'Soft' });
+    server.reset('PCS_Premium_00000001', 'http://127.0.0.1:9000/Ocpp/ChargePointService', { type: 'Soft' });
 
     //server.unlockConnector('Simulator 1', 'http://127.0.0.1:9221/Ocpp/ChargePointService');
-}, 7000)
+}, 2000)

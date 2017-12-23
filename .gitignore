@@ -43,3 +43,7 @@ config/default.json
 # temporary file
 tmp
 .fixme-to-issue
+/logs/
+/node-mosules/
+/node-modules/
+package-lock.json

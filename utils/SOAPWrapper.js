@@ -33,18 +33,29 @@ class SOAPWrapper {
         this.createServer();
     }
 
-    createCentralClient(endpoint) {
+    createCentralClient(endpoint, wsdl) {
         var self = this;
         var url = require('path').resolve(__dirname, '../wsdl/ocpp_centralsystemservice_1.5_final.wsdl');
         var endpoint = endpoint || 'http://localhost:9220/Ocpp/CentralSystemService';
 
-        return new Promise(function(resolve, reject) {
-            self.createClient(url, endpoint).then(function(client) {
-                resolve(client);
-            }).catch(function(error) {
-                reject(error);
-            });
-        });
+		//console.log(url);
+		if(!!wsdl){
+			return new Promise(function(resolve, reject) {
+	            self.createClient(wsdl).then(function(client) {
+	                resolve(client);
+	            }).catch(function(error) {
+	                reject(error);
+	            });
+	        });
+		} else {
+	        return new Promise(function(resolve, reject) {
+	            self.createClient(url, endpoint).then(function(client) {
+	                resolve(client);
+	            }).catch(function(error) {
+	                reject(error);
+	            });
+	        });
+		}
     }
 
     createChargePointClient(endpoint) {
@@ -108,11 +119,11 @@ class SOAPWrapper {
 
     createClient(url, endpoint) {
         var self = this;
+        var options = {};
 
+        if(!!endpoint) options.endpoint = endpoint;
         return new Promise(function(resolve, reject) {
-            soap.createClient(url, {
-                endpoint: endpoint
-            }, function(err, client) {
+            soap.createClient(url, options, function(err, client) {
                 if (err) {
                     console.log(self._log() + ' ERROR ' + err);
                     reject(err);
