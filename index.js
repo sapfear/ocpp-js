@@ -3,15 +3,16 @@ const ChargingPoint = require('./entities/ChargingPoint');
 const ChargingPointServer = require('./entities/ChargingPointServer');
 
 class OCPP {
-  constructor(options){
+  constructor(options, callback){
     this.options = options || {};
+	this.callback = callback || function(){};
   }
 
   createCentralSystem(port){
     // CentralSystem Default URI is /Ocpp/CentralSystemService
     console.log('port: ' + this.options.centralSystem.port);
     var port = this.options.centralSystem.port || port || 9220;
-    return new CentralSystem(port);
+    return new CentralSystem(port, this.callback);
   }
 
   createChargingPoint(uri, name, w){
@@ -23,7 +24,7 @@ class OCPP {
       throw 'Charging Point Server URI is required';
     }
 
-    return new ChargingPoint(serverURI, pointName, wsdl);
+    return new ChargingPoint(serverURI, pointName, wsdl, this.callback, this.options.chargingPoint.chargePointIP);
   }
 
   createChargingPointServer(){

@@ -10,7 +10,7 @@ var ChargePointService = {
             },
             Reset: function(args, callback) {
                 handlers.Reset.handle(args).then(function(data) {
-                  console.log('[SOAPWrapper] reset result: ' + JSON.stringify(data));
+                	console.log('[SOAPWrapper] reset result: ' + JSON.stringify(data));
                     callback(data);
                 });
             },

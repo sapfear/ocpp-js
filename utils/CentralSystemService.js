@@ -32,8 +32,9 @@ var CentralSystemService = {
             },
             StopTransaction: function(args, callback, headers, req) {
               // TODO: store the correct port [Issue #29]
+                console.log('Headers: ' + JSON.stringify(headers));
                 args.chargeBoxIdentity = headers.chargeBoxIdentity;
-                args.endpoint =  Utils.getRemoteAddress(req.connection.remoteAddress);
+                args.endpoint = Utils.getEndpoint(headers.From.Address, req.connection.remoteAddress);
 
                 handlers.StopTransaction.handle(args).then(function(data) {
                     callback(data);

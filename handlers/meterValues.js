@@ -14,22 +14,13 @@ module.exports = {
                     return v;
                 }
             });
-
-            // TODO: should filter by measurenad type [Issue #3]
-            // TODO: find how to calculate station measurment [Issue #12]
-            // TODO: Get Unit [Issue #13]
-
-            // Store in Collection MeterValues
-            Storage.save('meterValues', parsed, function(err) {
-                if (err) {
-                    console.log('error: ' + err);
-                    reject(err);
-                } else {
-                    resolve({
-                        MeterValuesResponse: {}
-                    });
-                }
-            });
+			console.log(parsed);
+			
+			resolve({
+				MeterValuesResponse: {
+					status: 'Accepted'
+				}
+			});
         });
     }
 }

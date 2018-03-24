@@ -4,22 +4,27 @@ const ip = require('ip');
 const UUID = require('uuid-js');
 
 class CentralSystem{
-    constructor(port) {
+    constructor(port, callback) {
         this.soapWrapper = new SOAPWrapper(port, true);
         var self = this;
         this.port = port;
         this.ip = ip.address();
         this.clients = [];
+		this.callback = callback;
 
-        this.soapWrapper.createCentralSystemServer(port);
-
-        console.log(`[CentralSystem] Server IP: ${self.ip}`);
+		this.connect()
     }
 
+	connect() {
+        this.soapWrapper.createCentralSystemServer(this.port);
+        console.log(`[CentralSystem] Server IP: ${this.ip}`);
+	}
+	
     createChargeBoxClient(station, callback){
       var self = this;
       console.log(`Creating SOAP Client for ${station.endpoint}`);
-      this.soapWrapper.createChargePointClient(station.endpoint).then(function(client){
+      this.soapWrapper.createChargePointClient(station.endpoint, this.callback).then(function(client){
+		  self.chargePointClient = client;
           self.clients.push({
             client: client,
             endpoint: station.endpoint,
@@ -53,105 +58,6 @@ class CentralSystem{
       this.unlockConnector(pointId, endpoint);
     }
 
-
-    clearCache(stationId, remoteAddress){
-      this.action = '/ClearCache';
-
-      this._updateSoapHeaders(stationId, remoteAddress);
-
-      var request = {
-        clearCacheRequest: {}
-      }
-
-      this.chargePointClient.ClearCache(request, function(result){
-        console.log(JSON.stringify(result));
-      });
-    }
-
-    changeAvailability(stationId, remoteAddress, data){
-      this.action = '/ChangeAvailability';
-
-      this._updateSoapHeaders(stationId, remoteAddress);
-
-      var request = {
-        changeAvailabilityRequest: data
-      }
-
-      this.chargePointClient.ChangeAvailability(request, function(result){
-        console.log(JSON.stringify(result));
-      });
-    }
-
-    changeConguration(stationId, remoteAddress, data){
-      this.action = '/ChangeConguration';
-
-      this._updateSoapHeaders(stationId, remoteAddress);
-
-      var request = {
-        changeCongurationRequest: data
-      }
-
-      this.chargePointClient.ChangeConguration(request, function(result){
-        console.log(JSON.stringify(result));
-      });
-    }
-
-    getConguration(stationId, remoteAddress){
-      this.action = '/GetConguration';
-
-      this._updateSoapHeaders(stationId, remoteAddress);
-
-      var request = {
-        getCongurationRequest: {}
-      }
-
-      this.chargePointClient.GetConguration(request, function(result){
-        console.log(JSON.stringify(result));
-      });
-    }
-
-    getDiagnostics(stationId, remoteAddress){
-      this.action = '/GetDiagnostics';
-
-      this._updateSoapHeaders(stationId, remoteAddress);
-
-      var request = {
-        getDiagnosticsRequest: {}
-      }
-
-      this.chargePointClient.GetDiagnostics(request, function(result){
-        console.log(JSON.stringify(result));
-      });
-    }
-
-    remoteStartTransaction(stationId, remoteAddress, data){
-      this.action = '/RemoteStartTransaction';
-
-      this._updateSoapHeaders(stationId, remoteAddress);
-
-      var request = {
-        remoteStartTransactionRequest: data
-      }
-
-      this.chargePointClient.RemoteStartTransaction(request, function(result){
-        console.log(JSON.stringify(result));
-      });
-    }
-
-    remoteStopTransaction(stationId, remoteAddress, data){
-      this.action = '/RemoteStopTransaction';
-
-      this._updateSoapHeaders(stationId);
-
-      var request = {
-        remoteStopTransactionRequest: data
-      }
-
-      this.chargePointClient.RemoteStopTransaction(request, function(result){
-        console.log(JSON.stringify(result));
-      });
-    }
-
     reset(stationId, remoteAddress, data){
       this.action = '/Reset';
 
@@ -166,7 +72,8 @@ class CentralSystem{
           resetRequest: data
         }
 
-        soapClient.Reset(request, function(result){
+        soapClient.Reset(request, function(err, result){
+          console.log( 'result' );
           console.log(JSON.stringify(result));
         });
       }else{
@@ -174,7 +81,119 @@ class CentralSystem{
       }
     }
 
-    unlockConnector(stationId, remoteAddress){
+    clearCache(stationId, remoteAddress){
+      this.action = '/ClearCache';
+
+      this._updateSoapHeaders(stationId, remoteAddress);
+
+      var request = {
+        clearCacheRequest: {}
+      }
+
+      this.chargePointClient.ClearCache(request, function(err, result){
+        console.log(JSON.stringify(result));
+      });
+    }
+
+    changeAvailability(stationId, remoteAddress, data){
+      this.action = '/ChangeAvailability';
+
+      this._updateSoapHeaders(stationId, remoteAddress);
+
+      var request = {
+        changeAvailabilityRequest: data
+      }
+
+      this.chargePointClient.ChangeAvailability(request, function(err, result){
+        console.log(JSON.stringify(result));
+      });
+    }
+
+    changeConfiguration(stationId, remoteAddress, data){
+      this.action = '/ChangeConfiguration';
+
+      this._updateSoapHeaders(stationId, remoteAddress);
+
+      var request = {
+        changeConfigurationRequest: data
+      }
+
+      this.chargePointClient.ChangeConfiguration(request, function(err, result){
+        console.log(JSON.stringify(result));
+      });
+    }
+
+    getConfiguration(stationId, remoteAddress){
+      this.action = '/GetConguration';
+
+      this._updateSoapHeaders(stationId, remoteAddress);
+
+      var request = {
+        getCongurationRequest: {}
+      }
+
+      this.chargePointClient.GetConfiguration(request, function(err, result){
+        console.log(JSON.stringify(result));
+      });
+    }
+
+    getConfiguration(stationId, remoteAddress, data){
+      this.action = '/GetConfiguration';
+
+      this._updateSoapHeaders(stationId, remoteAddress);
+
+      var request = {
+        getConfigurationRequest: data
+      }
+
+      this.chargePointClient.GetConfiguration(request, function(err, result){
+        console.log(JSON.stringify(result));
+      });
+    }
+
+    getDiagnostics(stationId, remoteAddress){
+      this.action = '/GetDiagnostics';
+
+      this._updateSoapHeaders(stationId, remoteAddress);
+
+      var request = {
+        getDiagnosticsRequest: {}
+      }
+
+      this.chargePointClient.GetDiagnostics(request, function(err, result){
+        console.log(JSON.stringify(result));
+      });
+    }
+
+    remoteStartTransaction(stationId, remoteAddress, data){
+      this.action = '/RemoteStartTransaction';
+
+      this._updateSoapHeaders(stationId, remoteAddress);
+
+      var request = {
+        remoteStartTransactionRequest: data
+      }
+
+      this.chargePointClient.RemoteStartTransaction(request, function(err, result){
+        console.log(JSON.stringify(result));
+      });
+    }
+
+    remoteStopTransaction(stationId, remoteAddress, data){
+      this.action = '/RemoteStopTransaction';
+
+      this._updateSoapHeaders(stationId);
+
+      var request = {
+        remoteStopTransactionRequest: data
+      }
+
+      this.chargePointClient.RemoteStopTransaction(request, function(err, result){
+        console.log(JSON.stringify(result));
+      });
+    }
+
+    unlockConnector(stationId, remoteAddress, data){
       this.action = '/UnlockConnector';
 
       this._updateSoapHeaders(stationId, remoteAddress);
@@ -185,12 +204,10 @@ class CentralSystem{
         var soapClient = client.client;
 
         var request = {
-          unlockConnectorRequest: {
-            connectorId: '1'
-          }
+          unlockConnectorRequest: data
         }
 
-        this.chargePointClient.UnlockConnector(request, function(result){
+        soapClient.UnlockConnector(request, function(err, result){
           console.log(JSON.stringify(result));
         });
       }else{
@@ -207,7 +224,7 @@ class CentralSystem{
         updateFirmwareRequest: data
       }
 
-      this.chargePointClient.UpdateFirmware(request, function(result){
+      this.chargePointClient.UpdateFirmware(request, function(err, result){
         console.log(JSON.stringify(result));
       });
     }
@@ -221,7 +238,7 @@ class CentralSystem{
         reserveNowRequest: data
       }
 
-      this.chargePointClient.ReserveNow(request, function(result){
+      this.chargePointClient.ReserveNow(request, function(err, result){
         console.log(JSON.stringify(result));
       });
     }
@@ -235,7 +252,7 @@ class CentralSystem{
         cancelReservationRequest: data
       }
 
-      this.chargePointClient.CancelReservation(request, function(result){
+      this.chargePointClient.CancelReservation(request, function(err, result){
         console.log(JSON.stringify(result));
       });
     }
@@ -249,7 +266,8 @@ class CentralSystem{
         sendLocalListRequest: data
       }
 
-      this.chargePointClient.SendLocalList(request, function(result){
+      this.chargePointClient.SendLocalList(request, function(err, result){
+        console.log(JSON.stringify(err));
         console.log(JSON.stringify(result));
       });
     }
@@ -263,7 +281,7 @@ class CentralSystem{
         getLocalListVersionRequest: {}
       }
 
-      this.chargePointClient.GetLocalListVersion(request, function(result){
+      this.chargePointClient.GetLocalListVersion(request, function(err, result){
         console.log(JSON.stringify(result));
       });
     }
@@ -277,7 +295,7 @@ class CentralSystem{
         dataTransferRequest: data
       }
 
-      this.chargePointClient.DataTransfer(request, function(result){
+      this.chargePointClient.DataTransfer(request, function(err, result){
         console.log(JSON.stringify(result));
       });
     }

@@ -35,7 +35,7 @@ module.exports = {
                                 bootNotificationResponse: {
                                     status: 'Accepted',
                                     currentTime: new Date().toISOString(),
-                                    heartbeatInterval: 60
+                                    heartbeatInterval: 20
                                 }
                             });
                         }
@@ -63,7 +63,7 @@ module.exports = {
                                         bootNotificationResponse: {
                                             status: 'Accepted',
                                             currentTime: new Date().toISOString(),
-                                            heartbeatInterval: 60
+                                            heartbeatInterval: 20
                                         }
                                     });
                                 } else {
@@ -73,7 +73,7 @@ module.exports = {
                                         bootNotificationResponse: {
                                             status: 'Accepted',
                                             currentTime: new Date().toISOString(),
-                                            heartbeatInterval: 60
+                                            heartbeatInterval: 20
                                         }
                                     });
                                 }

@@ -8,8 +8,20 @@ const StatusNotification = require('./statusNotification');
 const FirmwareStatusNotification = require('./firmwareStatusNotification');
 const DiagnosticsStatusNotification = require('./diagnosticsStatusNotification');
 const DataTransfer = require('./dataTransfer');
-const Reset = require('./reset');
 
+
+const Reset = require('./reset');
+const SendLocalList = require('./sendLocalList');
+const GetLocalListVersion = require('./getLocalListVersion');
+const GetConfiguration = require('./getConfiguration');
+const ClearCache = require('./clearCache');
+const RemoteStopTransaction = require('./remoteStopTransaction');
+const RemoteStartTransaction = require('./remoteStartTransaction');
+const ReserveNow = require('./reserveNow');
+const CancelReservation = require('./cancelReservation');
+const ChangeAvailability = require('./changeAvailability');
+const ChangeConfiguration = require('./changeConfiguration');
+const UnlockConnector = require('./unlockConnector');
 
 module.exports = {
     Authorize: Authorize,
@@ -22,5 +34,19 @@ module.exports = {
     FirmwareStatusNotification: FirmwareStatusNotification,
     DiagnosticsStatusNotification: DiagnosticsStatusNotification,
     DataTransfer: DataTransfer,
-    Reset: Reset
+	GetDiagnostics: require('./getDiagnostics'),
+	UpdateFirmware: require('./updateFirmware'),
+	
+    Reset: Reset,
+	SendLocalList: SendLocalList,
+	GetLocalListVersion: GetLocalListVersion,
+	GetConfiguration: GetConfiguration,
+	ClearCache: ClearCache,
+	RemoteStopTransaction: RemoteStopTransaction,
+	RemoteStartTransaction: RemoteStartTransaction,
+	ReserveNow: ReserveNow,
+	CancelReservation: CancelReservation,
+	ChangeAvailability: ChangeAvailability,
+	UnlockConnector: UnlockConnector,
+	ChangeConfiguration: ChangeConfiguration
 }

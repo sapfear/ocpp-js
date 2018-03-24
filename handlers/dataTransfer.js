@@ -4,8 +4,10 @@ module.exports = {
   handle: function(data){
     return new Promise(function(resolve, reject) {
       resolve({
-          currentTime: new Date().toISOString()
-        })
+        DataTransferResponse: {
+          status: 'Rejected'
+        }
+      });
     });
   }
 }

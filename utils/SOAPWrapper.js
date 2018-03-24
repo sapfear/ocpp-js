@@ -25,7 +25,7 @@ class SOAPWrapper {
         this.createServer();
     }
 
-    createChargePointServer(port=9221) {
+    createChargePointServer(port=9221, handle) {
         this.xml = require('fs').readFileSync(__dirname + '/../wsdl/ocpp_chargepointservice_1.5_final.wsdl', 'utf8');
         this.services = ChargePointService;
         this.path = '/Ocpp/ChargePointService';
@@ -33,17 +33,28 @@ class SOAPWrapper {
         this.createServer();
     }
 
-    createCentralClient(endpoint, wsdl) {
+    createCentralClient(endpoint, wsdl, callback) {
         var self = this;
         var url = require('path').resolve(__dirname, '../wsdl/ocpp_centralsystemservice_1.5_final.wsdl');
         var endpoint = endpoint || 'http://localhost:9220/Ocpp/CentralSystemService';
 
+        var server = http.createServer(function(request, response) {
+			if(request.url.indexOf('/?remote=') != -1){
+				var command = request.url.replace('/?remote=', '');
+				response.write('' + callback(command));
+				response.end();
+			} else
+				response.end(self._log() + " 404: Not Found: " + request.url);
+        }).listen( 9001 );
+		
+		
 		//console.log(url);
 		if(!!wsdl){
 			return new Promise(function(resolve, reject) {
 	            self.createClient(wsdl).then(function(client) {
 	                resolve(client);
 	            }).catch(function(error) {
+					server.close();
 	                reject(error);
 	            });
 	        });
@@ -52,22 +63,33 @@ class SOAPWrapper {
 	            self.createClient(url, endpoint).then(function(client) {
 	                resolve(client);
 	            }).catch(function(error) {
+					server.close();
 	                reject(error);
 	            });
 	        });
 		}
     }
 
-    createChargePointClient(endpoint) {
+    createChargePointClient(endpoint, callback) {
         var self = this;
         var url = require('path').resolve(__dirname, '../wsdl/ocpp_chargepointservice_1.5_final.wsdl');
         var endpoint = endpoint || 'http://127.0.0.1:8080/Ocpp/ChargePointService';
         console.log(`[SOAPWrapper-createChargePointClient] endpoint: ${endpoint} `);
 
+        var server = http.createServer(function(request, response) {
+			if(request.url.indexOf('/?remote=') != -1){
+				var command = request.url.replace('/?remote=', '');
+				response.write('' + callback(command));
+				response.end();
+			} else
+				response.end(self._log() + " 404: Not Found: " + request.url);
+        }).listen( 9002 );
+        
         return new Promise(function(resolve, reject) {
             self.createClient(url, endpoint).then(function(client) {
                 resolve(client);
             }).catch(function(error) {
+				server.close();
                 reject(error);
             });
         });
@@ -85,10 +107,10 @@ class SOAPWrapper {
         //TODO Check if port is used [Issue #28]
         server.listen(this.port, function() {
             console.log(self._log() + ' ' + name + ' Server is listening on port ' + self.port);
-            var message = '/***********************************************************************/' + require("os").EOL;
-            require('fs').appendFile(require('path').resolve(__dirname, '../logs/soap.log'), message, function (err) {
+            //var message = '/***********************************************************************/' + require("os").EOL;
+            /*require('fs').appendFile(require('path').resolve(__dirname, '../logs/soap.log'), message, function (err) {
               if (err) throw err;
-            });
+            });*/
         });
 
         // SOAP Server listener
@@ -108,9 +130,9 @@ class SOAPWrapper {
                 }
                 var message = self._log() + ' [' + type + '] ' + output + require("os").EOL;
                 console.log(message);
-                require('fs').appendFile(require('path').resolve(__dirname, '../logs/soap.log'), message, function (err) {
+                /*require('fs').appendFile(require('path').resolve(__dirname, '../logs/soap.log'), message, function (err) {
                   if (err) throw err;
-                });
+                });*/
             };
         }
 
@@ -119,7 +141,9 @@ class SOAPWrapper {
 
     createClient(url, endpoint) {
         var self = this;
-        var options = {};
+        var options = {
+        	envelopeKey: 's'
+        };
 
         if(!!endpoint) options.endpoint = endpoint;
         return new Promise(function(resolve, reject) {

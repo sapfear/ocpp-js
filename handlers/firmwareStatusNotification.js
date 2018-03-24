@@ -1,14 +1,13 @@
 const Promise = require('promise');
-const DB = require('../db/index.js');
-var Storage = new DB(process.env.storage);
 
 module.exports = {
   handle: function(data){
+    // TODO: save new availability status for station [Issue #9]
     return new Promise(function(resolve, reject) {
-      data.unread = true;
-
-      Storage.save('notification', data).then(function(){
-        resolve({});
+      resolve({
+        FirmwareStatusNotificationResponse: {
+          fileName: 'null'
+        }
       });
     });
   }
